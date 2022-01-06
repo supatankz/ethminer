@@ -14,7 +14,7 @@ same_line_log() {
   # \b is code for backspace. The for loop will hit backspace 1000 times
   for ((i=0; i<1000; i++)); do echo -ne "\b"; done
 	# Print message on same line
-	echo -n "[$(date '+%D %T')]: $*"
+	echo -n "[$(date '+%D %T')]: $* "
   for ((i=0; i<50; i++)); do echo -ne " "; done
   for ((i=0; i<50; i++)); do echo -ne "\b"; done
 }
@@ -46,12 +46,13 @@ IsFileGrowing() {
 
 ParseFlags() {
   declare -A MINING_POOL_PATHS
+	MINING_POOL_PATHS[ethermine]="us2.ethermine.org:4444"
 	MINING_POOL_PATHS[ethpool]="us1.ethpool.org:3333"
 	MINING_POOL_PATHS[2miners]="eth.2miners.com:2020"
 
   if [[ -n "$1" ]] && [[ -n "${MINING_POOL_PATHS[$1]}" ]]
 	then MINING_POOL=${MINING_POOL_PATHS[$1]}
-	else logit "ERROR: Invalid mining pool option: '$1'"
+	else logit "ERROR: Invalid mining pool option: '$1'. Valid options: ${!MINING_POOL_PATHS[@]}"
 			 return 1
 	fi
 	logit "Selected ${MINING_POOL_PATHS[$1]} for '$1'"
@@ -98,8 +99,8 @@ do # Check whether the log file is growing and hashrate
 
 	same_line_log "Lines: $num_lines_in_file/$num_lines_in_file_previous; "\
 	              "Acceptance: $num_accepted/$num_rejected; "\
-								"hashrate:($latest_hashrate) $latest_hashrate_log"
-	
+								"hashrate:($latest_hashrate) $latest_hashrate_log";
+
   has_ethminer_crashed=false
   if grep -q 'SIGSEGV' "$LOG_FILE"; then has_ethminer_crashed=true; fi
 
